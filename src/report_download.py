@@ -44,9 +44,9 @@ def renomear_arquivo_altas(download_path):
     nome_original = "altas_e_baixas.csv"
     caminho_original = os.path.join(download_path, nome_original)
 
-    esperar_download_concluir(caminho_original)
+    # esperar_download_concluir(caminho_original)
 
-    # time.sleep(3)
+    time.sleep(3)
     if os.path.exists(caminho_original):
         data = datetime.now().strftime("%d_%m_%Y")
         novo_nome = f"altas_e_baixas_{data}.csv"
