@@ -1,3 +1,5 @@
 finance_bot
-relatorios/*
+reports/*
+notebook/relatorios
 config/.env
+src/__pycache__/*
