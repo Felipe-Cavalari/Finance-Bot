@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.common.exceptions import TimeoutException, WebDriverException
+from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
 import logging
 
 # Configuração de logging para registrar erros e informações
@@ -61,6 +61,7 @@ def renomear_arquivo_altas(download_path):
 def webdriver_configurations(download_path):
     logger.info("Iniciando configuração do driver")
     options = Options()
+    options.browser_version = "140"
     options.add_experimental_option("prefs", {
     "download.default_directory": download_path,
     "download.prompt_for_download": False,
@@ -72,21 +73,37 @@ def webdriver_configurations(download_path):
     options.add_argument("--disable-gpu")
     return options
 
+
+
 def click_download_btn(driver):
-        # Captando botão para download
+    # Verificação de ADS
+    try:
+        logger.info("Verificando se existe anuncio no inicio da pagina")
+        anuncio = driver.find_element(By.ID, "OutOfPage")
+        if anuncio != None:
+            logger.info("Encontrado anuncio na página")
+            driver.execute_script(""" 
+        const element = document.getElementById("OutOfPage")
+        if (element) {
+            element.style.display = 'none'}
+    """)
+    except:
+        logger.info("Não encontrei anuncio, seguindo execução")
     try:
         logger.info("Iniciando funçao de clicar no botão")
-        btn = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "export_altas_e_baixas_mobile")))
+        btn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "export_altas_e_baixas_mobile")))
         btn.click()
         logger.info("Botão encontrado e download realizado")
     except TimeoutException:
         logger.error("Não encontrou o formato mobile, tentando no formato Web")
         try:
-            btn = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "export_altas_e_baixas_mobile")))
+            btn = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "export_altas_e_baixas")))
             btn.click()
             logger.info("encontrou o botão em formato web")
         except:
-            logger.error('Não encontrou nem no Web')
+            logger.error('Não encontrou nem no Web, Encerrando execução')
+            driver.quit()
+            exit()
 
 
 def execute_automation(url, download_path):

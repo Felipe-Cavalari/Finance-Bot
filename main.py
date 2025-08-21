@@ -1,6 +1,6 @@
 import os
-from src.report_download import execute_automation, logger, download_path, url
-from src.analise_report import full_path, load_csv
+from utils.report_download import execute_automation, logger, download_path, url
+from utils.analise_report import full_path, load_csv
 
 def main():
     os.makedirs(download_path, exist_ok=True)
